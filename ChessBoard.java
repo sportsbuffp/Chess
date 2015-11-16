@@ -1,86 +1,131 @@
 package ChessGame;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class ChessBoard extends JFrame{
+public class ChessBoard extends JComponent{
 	
-	public ChessBoard(){	
-		AChessGame game;
-		/* 
-		 * DEMO TO SEE WINDOW PLACEMENT AND SIZE
-		 * 
-		 * setLayout(new BorderLayout());
-		//place panels in WEST border to place buttons
-		Panel buttonPanel = new Panel(new GridLayout(4,1,10,10));
-		Button playGame = new Button("Play Game");
-		//place in button Panel
-		Button optionPage = new Button("Options");
-		//place in button Panel
-		Button exitToWindows = new Button("Exit to Desktop");
-		//place in button Panel
-		JLabel fill = new JLabel();
-		buttonPanel.add(fill);
-		buttonPanel.add(playGame);
-		buttonPanel.add(optionPage);
-		buttonPanel.add(exitToWindows);
-		add (buttonPanel, BorderLayout.WEST);
-		*/
-		setLayout(new BorderLayout());
-		
-//		game=new AChessGame();
-				
-		JPanel[][]squares;
-		Container C = getContentPane();
-	    C.setLayout(new GridLayout(8,8, 2 , 2)); 
-	    squares = new JPanel[8][8];
-	     for(int rows=0; rows<8; rows++){
-	        for(int cols=0; cols<8; cols++){
-	            squares[cols][rows] = new JPanel();
-	            if((rows+cols)%2 == 0)
-	                squares[cols][rows].setBackground(Color.white);
-	            else
-	                squares[cols][rows].setBackground(Color.black);
-	            //squares[i][j].addMouseListener(this);
-	            C.add(squares[cols][rows]);
-	        }
-	    }
+	/***********************************************************************
+	 * 
+	 **********************************************************************/
+	private static final long serialVersionUID = 1L;
+	private Game game;
+	private boolean hasPiece=false;
+	private Point start,end;
+	
+	public ChessBoard(){
+		game = new Game();
+		end=new Point();
+		start= new Point();
+	    addMouseListener(new MovePiece());
 	    
-		//make black vs white
-	    System.out.println("Here");
-	    game=new AChessGame();
-	    Piece hold;
-	    int test;
-	    System.out.println();
-	    for(int rows=0; rows<8; rows++){
-	        for(int cols=0; cols<8; cols++){
-	        	test=game.getPieceLocation(cols, rows);
-	        	hold=game.getPiece(cols, rows);
-	    		if(hold instanceof Knight){
-	    			System.out.println("Here 3 "+ hold.getValue());
-	    		}
-	    		else if(hold instanceof Pawn){
-	    			System.out.println("Here 1 "+ hold.getValue());
-	    		}
-	    		else if(hold instanceof Rook){
-	    			System.out.println("Here 5 "+ hold.getValue());
-	    		}
-	    		else if(hold instanceof Bishop){
-	    			System.out.println("Here 4 "+ hold.getValue());
-	    		}
-	    		else if(hold instanceof Queen){
-	    			System.out.println("Here 9 "+ hold.getValue());
-	    		}
-	    		else if(hold instanceof King){
-	    			System.out.println("Here K " + hold.getValue());
-	    		}
-	    		else{
-	    			System.out.println(test +" " + hold.getValue());
-	    		}
-	       //    squares[cols][rows]= hold
-	    
+	    repaint();
+	}
 		
-	        }
-	    }
+	/**
+	 * the paintComponent(Graphics g) method paints the view component.  It begins by
+	 * painting the black and white squares, and then iterates throught the board to paint
+	 * all the pieces on the board.  
+	 */
+	@Override
+	public void paintComponent(Graphics g){
+		Graphics2D g2 = (Graphics2D)g;
+		boolean isBlack = false; //keeps track of whether a square should be painted black or white
+		/*
+		 * This for loop cycles through an 8x8 grid, alternating black and white squares
+		 */
+		g2.setBackground(Color.black);
+		for(int i = 0; i<8; i++){
+			isBlack = !(isBlack);
+			for(int j = 0; j<8; j++){
+				isBlack = !(isBlack);
+				Rectangle rect = new Rectangle(i*62,j*62,62,62);
+				if(isBlack){	
+					g2.setColor(Color.DARK_GRAY);
+				}else{
+					g2.setColor(Color.white);
+				}
+				g2.fill(rect);
+			}
+		}
+		
+		/*************************************************************
+		 * This for loop cycles through the board and for any board square with a piece,
+		 * it paints draws the piece.  
+		 *************************************************************/
+		for(int i = 0; i<8; i++){
+			for(int j = 0; j<8; j++){
+				if(game.getPiece(i, j)!=null){ //perform draw action if piece exists on board
+					game.getPiece(i, j).draw(g2);
+				}
+			}
+		}	
 	}
 	
+	public class MovePiece implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) { 
+
+					
+					if(!hasPiece){
+						start.setLocation(e.getX()/62,e.getY()/62);
+						hasPiece=true;
+					}else if(hasPiece && start==end ){
+						
+						hasPiece=false;
+					}
+					
+					else{
+						end.setLocation(e.getX()/62,e.getY()/62);
+						if(game.getPiece(start.x, start.y)!=null){
+							if(game.movePiece(start.x, start.y, end.x, end.y)){
+//								System.out.println(game.getPieceVal(end.x, end.y)+" Here 2");
+								hasPiece=false;
+								repaint();
+								Movement tmp= game.getMix().makeMove(game.getBoard(), game.getSides());
+								game.movePiece(tmp.getStartX(), tmp.getStartY(), tmp.getEndX(), tmp.getEndY());					
+								repaint();
+							}
+						}
+						else{
+							hasPiece=false;
+						}
+	//				}
+	//			}			
+
+						
+			}
+
+
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 }

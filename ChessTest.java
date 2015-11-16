@@ -8,7 +8,7 @@ public class ChessTest {
 
 	@Test
 	public void findPawn() {
-		AChessGame game=new AChessGame();
+		Game game=new Game();
 		Object a= game.getPiece(0,1);
 //		System.out.println(a.getClass());
 		assertEquals(((Piece) a).getSide(),Side.Black);
@@ -16,7 +16,7 @@ public class ChessTest {
 	}
 	@Test
 	public void findKing() {
-		AChessGame game=new AChessGame();
+		Game game=new Game();
 		Object a= game.getPiece(4,0);
 		System.out.println();
 		System.out.println(a.getClass());
@@ -24,21 +24,10 @@ public class ChessTest {
 		assertEquals(((Piece) a).getValue(),10);
 
 	}
-	@Test
-	public void findEmpty() {
-		Side[][] side;
-		side =new Side[8][8];
-		side[5][5]=Side.White;
-		AChessGame game=new AChessGame();
-		Object a= game.getPiece(5,4);
-//		System.out.println(a.getClass());
-		assertEquals( ((Piece) a).getSide(),Side.Empty);
-		assertEquals( ((Piece) a).move(5,5,side),false);
-
-	}
+	
 	@Test
 	public void findRook() {
-		AChessGame game=new AChessGame();
+		Game game=new Game();
 		Object a= game.getPiece(0,0);
 //		System.out.println(a.getClass());
 		
@@ -47,7 +36,7 @@ public class ChessTest {
 	}
 	@Test
 	public void findKnight() {
-		AChessGame game=new AChessGame();
+		Game game=new Game();
 		Object a= game.getPiece(6,0);
 //		System.out.println(a.getClass());
 		assertEquals(((Piece) a).getSide(),Side.Black);
@@ -253,7 +242,7 @@ public class ChessTest {
 		Side[][] side;
 		side =new Side[8][8];
 		side[2][3]=Side.Empty;
-		Pawn p1=new Pawn(Side.White,2,1);
+		Pawn p1=new Pawn(Side.Black,2,1);
 		assertEquals(p1.move(2, 3,side), true);
 	}
 	@Test
@@ -321,7 +310,7 @@ public class ChessTest {
 		Side[][] side;
 		side =new Side[8][8];
 		side[2][4]=Side.Empty;
-		Pawn p1=new Pawn(Side.Black,2,6);
+		Pawn p1=new Pawn(Side.White,2,6);
 		assertEquals(p1.move(2, 4,side), true);
 	}
 	@Test
@@ -337,7 +326,7 @@ public class ChessTest {
 		Side[][] side;
 		side =new Side[8][8];
 		side[2][3]=Side.Empty;
-		Pawn p1=new Pawn(Side.Black,2,1);
+		Pawn p1=new Pawn(Side.White,2,1);
 		assertEquals(p1.move(2, 3,side), false);
 	}
 
@@ -356,7 +345,7 @@ public void testPawnMove14() {
 	Side[][] side;
 	side =new Side[8][8];
 	side[2][4]=Side.Empty;
-	Pawn p1=new Pawn(Side.Black,2,6);
+	Pawn p1=new Pawn(Side.White,2,6);
 	assertEquals(p1.move(2, 4,side), true);
 }
 @Test
@@ -663,3 +652,4 @@ public void testBishop1() {
 }
 
 }
+

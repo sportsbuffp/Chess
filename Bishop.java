@@ -1,18 +1,33 @@
 
 package ChessGame;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 /**
  * @author Alex Latunski
  *
  */
-public class Bishop implements Piece{
-	//obstruction
+public class Bishop implements Piece {
+	// obstruction
 	// if (obstruction&&side!=side.this)attack()
 	private Side side;
-	private Side[][] board;
 	private int row;
 	private int column;
 	private int value;
+	private BufferedImage img;
+
+	/**
+	 * @return the img
+	 */
+	public BufferedImage getImg() {
+		return img;
+	}
 
 	/*
 	 * Constructor sets side, localized board position Unique Identity
@@ -20,21 +35,26 @@ public class Bishop implements Piece{
 	 */
 	Bishop(Side side, int col, int row) {
 		this.side = side;
-		// if (side == Side.White) {
-		// board[1][0] = 3;
-		// board[6][0] = 3;
-		// } else if (side == Side.Black) {
-		// board[1][7] = 3;
-		// board[6][7] = 3;
-		// }
-		board = new Side[8][8];
 		this.row = row;
 		this.column = col;
 		this.value = 4;
-		board[col][row]=side;
+		img = null;
+		if (side == Side.White) {
+			try {
+				img = ImageIO.read(new File("whitebishop.png"));
+			} catch (IOException e) {
+				System.out.println("file not found");
+			}
+		} else {
+			try {
+				img = ImageIO.read(new File("blackbishop.png"));
+			} catch (IOException e) {
+				System.out.println("filenotfound");
+			}
+		}
 	}
 
-	private boolean attack( Side mine) {
+	private boolean attack(Side mine) {
 		if (side != mine) {
 			return true;
 
@@ -42,80 +62,20 @@ public class Bishop implements Piece{
 			return false;
 
 	}
-	
+
 	public boolean move(int posCol, int posRow, Side[][] mine) {
 		int r = 0;
 		int c = 0;
-
-	//if the iteration number is the same checks value otherwise, NEXT!
-		if (row < posRow && column < posCol && ((posRow - row) == (posCol - column))) {
-			for (r = row; r <= posRow ; r++) {
-				for (c = column; c <= posCol; c++) {
-					if((r - row) == (c - column)){
-						if (mine[c][r] != Side.Empty && r < posRow && c < posCol) {
-							return false;
-						} else if (!attack(mine[c][r])) {
-							return false;
-						}
-					}
-				}
-			}
-
-				row = posRow;
-				column = posCol;
-				return true;
-			
-		}else if (row < posRow && column > posCol && ((posRow - row) == (column-posCol ))) {
-			for (r = row; r <= posRow ; r++) {
-				for (c = column; c >= posCol; c--) {
-					if((r - row) == (column - c)){
-						if (mine[c][r] != Side.Empty && r < posRow && c > posCol) {
-							return false;
-						} else if (!attack(mine[c][r])) {
-							return false;
-						}
-					}
-				}
-			}
-
-				row = posRow;
-				column = posCol;
-				return true;
-			
-		}else if (row > posRow && column < posCol && ((row-posRow ) == (posCol - column))) {
-			for (r = row; r >= posRow ; r--) {
-				for (c = column; c <= posCol; c++) {
-					if((row - r) == (c - column)){
-						if (mine[c][r] != Side.Empty && r > posRow && c < posCol) {
-							return false;
-						} else if (!attack(mine[c][r])) {
-							return false;
-						}
-					}
-				}
-			}
+		if(moveTst(posCol,posRow,mine)){
 			row = posRow;
 			column = posCol;
 			return true;
-		}else if (row > posRow && column > posCol && ((row-posRow ) == (column-posCol ))) {
-				for (r = row; r >= posRow ; r--) {
-					for (c = column; c >= posCol; c--) {
-						if((row - r) == (column - c)){
-							if (mine[c][r] != Side.Empty && r > posRow && c > posCol) {
-								return false;
-							} else if (!attack(mine[c][r])) {
-								return false;
-							}
-						}
-					}
-				}
-
-				row = posRow;
-				column = posCol;
-				return true;
-			
 		}
-		return false;
+		else{
+			return false;
+		}
+		// if the iteration number is the same checks value otherwise, NEXT!
+		
 	}
 
 	/**
@@ -124,7 +84,7 @@ public class Bishop implements Piece{
 	public Side getSide() {
 		return side;
 	}
-	
+
 	/**
 	 * @return the row
 	 */
@@ -144,5 +104,81 @@ public class Bishop implements Piece{
 	 */
 	public int getValue() {
 		return value;
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		g.drawImage(img, column*62, row*62, null);
+
+	}
+
+	@Override
+	public boolean moveTst(int posCol, int posRow, Side[][] mine) {
+		int c;
+		int r;
+		if (row < posRow && column < posCol && ((posRow - row) == (posCol - column))) {
+			for (r = row + 1; r <= posRow; r++) {
+				for (c = column + 1; c <= posCol; c++) {
+					if ((r - row) == (c - column)) {
+						if (mine[c][r] != Side.Empty && r < posRow && c < posCol) {
+							return false;
+						} else if (!attack(mine[c][r])) {
+							return false;
+						}
+					}
+				}
+			}
+
+
+			return true;
+		} else if (row < posRow && column > posCol && ((posRow - row) == (column - posCol))) {
+			for (r = row + 1; r <= posRow; r++) {
+				for (c = column - 1; c >= posCol; c--) {
+					if ((r - row) == (column - c)) {
+						if (mine[c][r] != Side.Empty && r < posRow && c > posCol) {
+							return false;
+						} else if (!attack(mine[c][r])) {
+							return false;
+						}
+					}
+				}
+			}
+
+
+			return true;
+
+		} else if (row > posRow && column < posCol && ((row - posRow) == (posCol - column))) {
+			for (r = row - 1; r >= posRow; r--) {
+				for (c = column + 1; c <= posCol; c++) {
+					if ((row - r) == (c - column)) {
+						if (mine[c][r] != Side.Empty && r > posRow && c < posCol) {
+							return false;
+						} else if (!attack(mine[c][r])) {
+							return false;
+						}
+					}
+				}
+			}
+
+			return true;
+		} else if (row > posRow && column > posCol && ((row - posRow) == (column - posCol))) {
+			for (r = row - 1; r >= posRow; r--) {
+				for (c = column - 1; c >= posCol; c--) {
+					if ((row - r) == (column - c)) {
+						if (mine[c][r] != Side.Empty && r > posRow && c > posCol) {
+							return false;
+						} else if (!attack(mine[c][r])) {
+							return false;
+						}
+					}
+				}
+			}
+
+
+			return true;
+
+		}
+		
+		return false;
 	}
 }
