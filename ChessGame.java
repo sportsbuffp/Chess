@@ -69,7 +69,12 @@ public class ChessGame  {
 	public class Options implements ActionListener{
 		// TODO Auto-generated method stub
 		public void actionPerformed(ActionEvent playGameList){
-			JOptionPane.showMessageDialog(null, "Options Page still not yet released at this time");
+			Options1 OptionsPage = new Options1();
+			OptionsPage.setTitle("Chess");
+			OptionsPage.setSize(1000,1000);
+			OptionsPage.setLocation(420,270);
+			OptionsPage.setVisible(true);
+			OptionsPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		}
 	}
 	public class ExitToWindows implements ActionListener{
