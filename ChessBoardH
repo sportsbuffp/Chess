@@ -1,0 +1,131 @@
+package ChessGame;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+public class ChessBoardH extends JComponent{
+	
+	/***********************************************************************
+	 * 
+	 **********************************************************************/
+	private static final long serialVersionUID = 1L;
+	private Game game;
+	private boolean hasPiece=false;
+	private Point start,end;
+	
+	public ChessBoardH(){
+		game = new Game();
+		end=new Point();
+		start= new Point();
+	    addMouseListener(new MovePiece());
+	    
+	    repaint();
+	}
+		
+	/**
+	 * the paintComponent(Graphics g) method paints the view component.  It begins by
+	 * painting the black and white squares, and then iterates throught the board to paint
+	 * all the pieces on the board.  
+	 */
+	@Override
+	public void paintComponent(Graphics g){
+		Graphics2D g2 = (Graphics2D)g;
+		boolean isBlack = false; //keeps track of whether a square should be painted black or white
+		/*
+		 * This for loop cycles through an 8x8 grid, alternating black and white squares
+		 */
+		g2.setBackground(Color.black);
+		for(int i = 0; i<8; i++){
+			isBlack = !(isBlack);
+			for(int j = 0; j<8; j++){
+				isBlack = !(isBlack);
+				Rectangle rect = new Rectangle(i*62,j*62,62,62);
+				if(isBlack){	
+					g2.setColor(Color.DARK_GRAY);
+				}else{
+					g2.setColor(Color.orange);
+				}
+				g2.fill(rect);
+			}
+		}
+		
+		/*************************************************************
+		 * This for loop cycles through the board and for any board square with a piece,
+		 * it paints draws the piece.  
+		 *************************************************************/
+		for(int i = 0; i<8; i++){
+			for(int j = 0; j<8; j++){
+				if(game.getPiece(i, j)!=null){ //perform draw action if piece exists on board
+					game.getPiece(i, j).draw(g2);
+				}
+			}
+		}	
+	}
+	
+	public class MovePiece implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) { 
+
+					
+					if(!hasPiece){
+						start.setLocation(e.getX()/62,e.getY()/62);
+						hasPiece=true;
+					}else if(hasPiece && start==end ){
+						
+						hasPiece=false;
+					}
+					
+					else{
+						end.setLocation(e.getX()/62,e.getY()/62);
+						if(game.getPiece(start.x, start.y)!=null){
+							if(game.movePiece(start.x, start.y, end.x, end.y)){
+//								System.out.println(game.getPieceVal(end.x, end.y)+" Here 2");
+								hasPiece=false;
+								repaint();
+								Movement tmp= game.getMix().makeMove(game.getBoard(), game.getSides());
+								game.movePiece(tmp.getStartX(), tmp.getStartY(), tmp.getEndX(), tmp.getEndY());					
+								repaint();
+							}
+						}
+						else{
+							hasPiece=false;
+						}
+	//				}
+	//			}			
+
+						
+			}
+
+
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+}
